@@ -1,11 +1,11 @@
-/*https://neumorphism.io*/
-
 :root {
     color-scheme: light dark;
     --header-height: 40px;
 
     --gap: 1rem;
     --scroll-button-offset: 50px;
+
+    --header-padding: 5px;
 
 
     --light-background: #ffffff;
@@ -35,10 +35,11 @@ hr:not(.cm-editor hr) {
     display: none !important;
 }
 
+
 .mod-left-split .mod-top-left-space .workspace-tab-header-container,
 .workspace-ribbon.side-dock-ribbon.mod-left,
 .workspace-tab-header-container-inner,
-.workspace-sidedock-vault-profile {
+.workspace-sidedock-vault-profile{
     border: none !important;
 }
 
@@ -47,12 +48,11 @@ hr:not(.cm-editor hr) {
     background: var(--background) !important;
 }
 
-.sidebar-toggle-button.mod-left,
+body:not(.mod-macos) .sidebar-toggle-button.mod-left,
 .workspace-split.mod-vertical.mod-root,
 .mod-left-split .mod-top-left-space .workspace-tab-header-container,
 .workspace-ribbon.side-dock-ribbon.mod-left,
 .workspace-sidedock-vault-profile,
-.sidebar-toggle-button.mod-left,
 .workspace-split.mod-horizontal.mod-sidedock.mod-right-split,
 .mod-left-split .mod-top-left-space .workspace-tab-container .workspace-leaf {
     background: var(--floating-background) !important;
@@ -87,7 +87,8 @@ hr:not(.cm-editor hr) {
 }
 
 .workspace > *,
-.sidebar-toggle-button.mod-left {
+.sidebar-toggle-button.mod-left,
+.mod-macos .sidebar-toggle-button.mod-right {
     margin-block-start: var(--gap);
 }
 
@@ -96,7 +97,8 @@ hr:not(.cm-editor hr) {
 }
 
 .horizontal-main-container .mod-right-split .workspace-tabs,
-.mod-right-split .workspace-tabs.mod-active {
+.mod-right-split .workspace-tabs.mod-active,
+.mod-macos .sidebar-toggle-button.mod-left {
     margin-block-start: 0;
 }
 
@@ -114,7 +116,8 @@ hr:not(.cm-editor hr) {
     margin-inline-start: var(--gap);
 }
 
-.workspace-split.mod-right-split {
+.workspace-split.mod-right-split,
+.mod-macos .sidebar-toggle-button.mod-right {
     margin-inline-end: var(--gap);
 }
 
@@ -158,6 +161,7 @@ hr:not(.cm-editor hr) {
     transform: translate(-50%, -50%);
 }
 
+.workspace-split.mod-vertical.mod-root .workspace-tab-header-container-inner,
 .workspace,
 .workspace-tabs,
 .workspace-tab-container,
@@ -190,3 +194,42 @@ div[class^="div-scrollTo"] {
     right: calc(var(--gap) * 2) !important;
     bottom: calc(var(--gap) * 2) !important;
 }
+
+.workspace-tab-header-inner {
+    padding-block: 0 !important;
+    margin-block: var(--header-padding);
+    height: calc(100% - (var(--header-padding) * 2));
+}
+
+.workspace-tab-header-container-inner {
+    padding-inline: var(--header-padding) !important;
+    border-bottom: none !important;
+}
+
+.workspace-tab-header.tappable.is-active {
+    overflow: var(--overflow) !important;
+    margin-block-start: var(--header-padding);
+    height: calc(100% - (var(--header-padding) * 1));
+    box-shadow:
+            calc(-1 * var(--tab-outline-width)) 0 0 var(--tab-outline-color), /* links */
+            var(--tab-outline-width) 0 0 var(--tab-outline-color),           /* rechts */
+            0 calc(-1 * var(--tab-outline-width)) 0 var(--tab-outline-color); /* oben */
+}
+
+.workspace-tabs.mod-top.mod-active .workspace-tab-header.tappable.is-active .workspace-tab-header-inner {
+    position: relative;
+    overflow: var(--overflow) !important;
+}
+
+.workspace-tabs.mod-top.mod-active .workspace-tab-header.tappable.is-active .workspace-tab-header-inner:before {
+    position: absolute;
+    content: '';
+    background: var(--background);
+    width: calc(100% + 16px);
+    height: 4px;
+    bottom: -12px;
+    z-index: 1000;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
