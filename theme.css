@@ -12,7 +12,7 @@
     --light-shadow-first: #949494;
     --light-shadow-second: #ffffff;
 
-    --dark-background: #191919;
+    --dark-background: #1c1c1c;
     --dark-shadow-first: #0a0a0a;
     --dark-shadow-second: #111111;
 
@@ -28,6 +28,10 @@
 
 hr:not(.cm-editor hr) {
     opacity: 0;
+}
+
+.cm-editor img {
+    border-radius: var(--border-radius) !important;
 }
 
 .workspace-ribbon.mod-left:before,
@@ -232,4 +236,3 @@ div[class^="div-scrollTo"] {
     left: 50%;
     transform: translateX(-50%);
 }
-
