@@ -259,6 +259,7 @@ div[class^="div-scrollTo"] {
 .workspace-tabs.mod-top.mod-active .workspace-tab-header.tappable.is-active .workspace-tab-header-inner {
     position: relative;
     overflow: var(--overflow) !important;
+    isolation: isolate;
 }
 
 .workspace-tabs.mod-top.mod-active .workspace-tab-header.tappable.is-active .workspace-tab-header-inner:before {
@@ -268,7 +269,7 @@ div[class^="div-scrollTo"] {
     width: calc(100% + 16px);
     height: 4px;
     bottom: -12px;
-    z-index: 1000;
+    z-index: 1;
     left: 50%;
     transform: translateX(-50%);
 }
