@@ -27,7 +27,7 @@ body {
 }
 
 hr:not(.cm-editor hr) {
-    opacity: 0;
+    opacity: 0 !important;
 }
 
 .cm-editor img {
@@ -90,6 +90,10 @@ body:not(.mod-macos) .sidebar-toggle-button.mod-left,
     gap: var(--gap);
 }
 
+.workspace-split.mod-horizontal.mod-sidedock.mod-right-split {
+    gap: 0;
+}
+
 .workspace > *,
 .sidebar-toggle-button.mod-left,
 .mod-macos .sidebar-toggle-button.mod-right {
@@ -116,19 +120,43 @@ body:not(.mod-macos) .sidebar-toggle-button.mod-left,
 }
 
 .workspace-ribbon.mod-left,
-.sidebar-toggle-button.mod-left {
+.sidebar-toggle-button.mod-left,
+body:not(.show-ribbon) .workspace-split.mod-horizontal.mod-sidedock.mod-left-split,
+body:not(.show-ribbon) .workspace:not(.is-left-sidedock-open) .workspace-split.mod-vertical.mod-root {
     margin-inline-start: var(--gap);
 }
 
+.mod-macos .sidebar-toggle-button.mod-left {
+    margin-inline-start: 0;
+}
+
 .workspace-split.mod-right-split,
-.mod-macos .sidebar-toggle-button.mod-right {
+.mod-macos .sidebar-toggle-button.mod-right,
+.workspace:not(.is-right-sidedock-open) .workspace-split.mod-vertical.mod-root {
     margin-inline-end: var(--gap);
 }
 
-.workspace-tab-header-container,
-.workspace-tab-header-container-inner {
-    padding: 0 !important;
+body:not(.show-ribbon) .workspace.is-left-sidedock-open .sidebar-toggle-button.mod-left {
     margin: 0 !important;
+}
+
+.workspace-tabs.mod-top:not(.mod-top-right-space) .workspace-tab-header-container,
+.workspace-tabs.mod-top:not(.mod-top-right-space) .workspace-tab-header-container-inner,
+.workspace-split.mod-horizontal.mod-sidedock.mod-right-split .workspace-tab-header-container,
+.workspace-split.mod-horizontal.mod-sidedock.mod-right-split .workspace-tab-header-container-inner {
+    padding: 0 !important;
+    padding-inline: calc(var(--gap) / 4) !important;
+    margin: 0 !important;
+}
+
+.workspace-tabs.mod-active.mod-top .workspace-tab-header-container {
+    padding-inline-start: 0 !important;
+}
+
+.workspace-tabs.mod-active.mod-top .workspace-tab-header-container-inner,
+.workspace-split.mod-vertical.mod-root .workspace-tab-header-container-inner {
+    padding-inline: 12px !important;
+    margin-block: 0 !important;
 }
 
 .nav-header,
@@ -215,9 +243,17 @@ div[class^="div-scrollTo"] {
     margin-block-start: var(--header-padding);
     height: calc(100% - (var(--header-padding) * 1));
     box-shadow:
-            calc(-1 * var(--tab-outline-width)) 0 0 var(--tab-outline-color), /* links */
-            var(--tab-outline-width) 0 0 var(--tab-outline-color),           /* rechts */
-            0 calc(-1 * var(--tab-outline-width)) 0 var(--tab-outline-color); /* oben */
+            calc(-1 * var(--tab-outline-width)) 0 0 var(--tab-outline-color),
+            var(--tab-outline-width) 0 0 var(--tab-outline-color),
+            0 calc(-1 * var(--tab-outline-width)) 0 var(--tab-outline-color);
+}
+
+.workspace-tab-header.tappable.is-active:not(
+  .mod-active,
+  .workspace-tabs.mod-active.mod-top .workspace-tab-header.tappable.is-active
+) {
+    margin-block-start: var(--header-padding);
+    height: calc(100% - (var(--header-padding) * 2));
 }
 
 .workspace-tabs.mod-top.mod-active .workspace-tab-header.tappable.is-active .workspace-tab-header-inner {
@@ -235,4 +271,8 @@ div[class^="div-scrollTo"] {
     z-index: 1000;
     left: 50%;
     transform: translateX(-50%);
+}
+
+.mod-windows .workspace-split.mod-vertical.mod-root .workspace-tabs.mod-active.mod-top.mod-top-right-space .workspace-tab-header-container {
+    padding-inline-end: calc(var(--size-4-2) + var(--frame-right-space)) !important;
 }
