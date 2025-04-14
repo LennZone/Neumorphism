@@ -6,7 +6,8 @@ body {
     --scroll-button-offset: 50px;
 
     --header-padding: 5px;
-
+    --titlebar-background: #171717;
+    --titlebar-border-color: transparent;
 
     --light-background: #ffffff;
     --light-shadow-first: #949494;
