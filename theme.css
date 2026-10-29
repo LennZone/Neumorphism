@@ -1,36 +1,67 @@
+/* ==========================================================================
+   NEUMORPHISM
+   A soft Obsidian theme: every surface is shaped from one material.
+   Raised means "can be pressed", inset means "pressed, active or input".
+   Light always comes from the top left.
+
+   Table of contents (search for "== 03" etc. to jump to a section):
+     00  Style Settings
+     01  Tokens: base
+     02  Tokens: derived
+     03  Obsidian mapping
+     03b Dark mode
+     04  Class toggles
+     05  Background
+     06  Layout
+     07  Workspace
+     08  Editor
+     09  Sidebars and views
+     10  Interface elements
+     11  Mobile
+     12  Platforms
+
+   Comments reference spec IDs (e.g. L-2). The spec is not part of the
+   published theme.
+   ========================================================================== */
+
+
+/* == 00 STYLE SETTINGS =====================================================
+   Settings for the Style Settings plugin (S-1 to S-7). Defaults match the
+   tokens in sections 01 and 03b.
+   ========================================================================== */
+
 /* @settings
 
 name: Neumorphism
 id: neumorphism
 settings:
   -
-    id: layout
+    id: nm-layout
     title: Layout
     type: heading
     level: 2
     collapsed: true
   -
-    id: gap
-    title: Panel gap
-    description: Space between floating panels
+    id: nm-gap
+    title: Gap between panels
     type: variable-number-slider
-    default: 1
+    default: 16
     min: 0
-    max: 3
-    step: 0.25
-    format: rem
-  -
-    id: border-radius
-    title: Border radius
-    type: variable-number-slider
-    default: 10
-    min: 0
-    max: 30
+    max: 40
     step: 1
     format: px
   -
-    id: header-height
-    title: Header height
+    id: nm-mobile-gap-factor
+    title: Gap factor on phones
+    description: Multiplies the gap on phones
+    type: variable-number-slider
+    default: 0.5
+    min: 0
+    max: 1
+    step: 0.05
+  -
+    id: nm-header-height
+    title: Tab bar height
     type: variable-number-slider
     default: 40
     min: 28
@@ -38,373 +69,1521 @@ settings:
     step: 2
     format: px
   -
-    id: appearance
-    title: Appearance
-    type: heading
-    level: 2
-    collapsed: true
-  -
-    id: show-left-sidebar
-    title: Show left sidebar
-    description: Show the settings gear button in the left sidebar
+    id: nm-hide-status-bar
+    title: Hide status bar
     type: class-toggle
-    default: true
+    default: false
   -
-    id: light-colors
-    title: Light mode colors
+    id: nm-relief
+    title: Relief and shape
     type: heading
     level: 2
     collapsed: true
   -
-    id: light-background
-    title: Background
-    type: variable-color
-    opacity: false
-    format: hex
-    default: '#ffffff'
+    id: nm-distance
+    title: Relief depth
+    description: How far raised surfaces stand out (0 turns the relief off)
+    type: variable-number-slider
+    default: 6
+    min: 0
+    max: 16
+    step: 1
+    format: px
   -
-    id: light-shadow-first
-    title: Shadow
-    type: variable-color
-    opacity: false
-    format: hex
-    default: '#949494'
+    id: nm-blur-factor
+    title: Softness
+    description: Blur of the shadows as a multiple of the depth
+    type: variable-number-slider
+    default: 2
+    min: 1
+    max: 4
+    step: 0.25
   -
-    id: light-shadow-second
-    title: Highlight
-    type: variable-color
-    opacity: false
-    format: hex
-    default: '#ffffff'
+    id: nm-shade-light
+    title: Shadow strength (light mode)
+    type: variable-number-slider
+    default: 18
+    min: 0
+    max: 60
+    step: 1
+    format: '%'
   -
-    id: dark-colors
-    title: Dark mode colors
+    id: nm-light-light
+    title: Highlight strength (light mode)
+    type: variable-number-slider
+    default: 70
+    min: 0
+    max: 100
+    step: 1
+    format: '%'
+  -
+    id: nm-shade-dark
+    title: Shadow strength (dark mode)
+    type: variable-number-slider
+    default: 45
+    min: 0
+    max: 80
+    step: 1
+    format: '%'
+  -
+    id: nm-light-dark
+    title: Highlight strength (dark mode)
+    type: variable-number-slider
+    default: 7
+    min: 0
+    max: 40
+    step: 1
+    format: '%'
+  -
+    id: nm-radius
+    title: Corner radius of panels
+    type: variable-number-slider
+    default: 16
+    min: 0
+    max: 32
+    step: 1
+    format: px
+  -
+    id: nm-radius-small
+    title: Corner radius of buttons and blocks
+    type: variable-number-slider
+    default: 10
+    min: 0
+    max: 20
+    step: 1
+    format: px
+  -
+    id: nm-plain-images
+    title: Images without relief
+    type: class-toggle
+    default: false
+  -
+    id: nm-no-tree-lines
+    title: No tree lines in the file explorer
+    type: class-toggle
+    default: false
+  -
+    id: nm-no-motion
+    title: No transitions
+    type: class-toggle
+    default: false
+  -
+    id: nm-colors
+    title: Colors
     type: heading
     level: 2
     collapsed: true
   -
-    id: dark-background
-    title: Background
-    type: variable-color
-    opacity: false
+    id: nm-base
+    title: Base color
+    description: The material of all surfaces; shadows and highlights are derived from it
+    type: variable-themed-color
     format: hex
-    default: '#1c1c1c'
+    opacity: false
+    default-light: '#e4e9f0'
+    default-dark: '#2b2f36'
   -
-    id: dark-shadow-first
-    title: Shadow
-    type: variable-color
-    opacity: false
+    id: nm-text
+    title: Text
+    type: variable-themed-color
     format: hex
-    default: '#0a0a0a'
+    opacity: false
+    default-light: '#2f3640'
+    default-dark: '#dfe3ea'
   -
-    id: dark-shadow-second
-    title: Highlight
-    type: variable-color
-    opacity: false
+    id: nm-accent
+    title: Accent
+    type: variable-themed-color
     format: hex
-    default: '#111111'
+    opacity: false
+    default-light: '#3d5ccc'
+    default-dark: '#8aa2ff'
+  -
+    id: nm-obsidian-accent
+    title: Use Obsidian's accent color
+    description: Uses the accent color from Settings > Appearance instead of the one above
+    type: class-toggle
+    default: false
+  -
+    id: nm-paper-editor
+    title: Paper surface for notes
+    description: Notes get a slightly lighter surface than the panels
+    type: class-toggle
+    default: false
+  -
+    id: nm-typography
+    title: Typography
+    type: heading
+    level: 2
+    collapsed: true
+  -
+    id: nm-embossed-headings
+    title: Embossed headings
+    type: class-toggle
+    default: false
 
 */
 
+
+/* == 01 TOKENS: BASE =======================================================
+   Light mode values (T-1, T-2, T-6, T-7). Dark mode only changes the
+   values in section 03b. Everything else is derived from these.
+   ========================================================================== */
+
 body {
-    color-scheme: light dark;
-    --header-height: 40px;
+    /* T-1 Material */
+    --nm-base: #e4e9f0;
+    --nm-shade-light: 18%;
+    --nm-light-light: 70%;
+    --nm-shade-dark: 45%;
+    --nm-light-dark: 7%;
+    --nm-shade-amount: var(--nm-shade-light);
+    --nm-light-amount: var(--nm-light-light);
 
-    --gap: 1rem;
-    --scroll-button-offset: 50px;
+    /* T-2 Text and accent */
+    --nm-text: #2f3640;
+    --nm-text-muted: #5d6673;
+    --nm-text-faint: #767e8b;
+    --nm-accent: #3d5ccc;
+    --nm-on-accent: #ffffff;
 
-    --header-padding: 5px;
-    --titlebar-background: #171717;
-    --titlebar-border-color: transparent;
+    /* T-2 Muted colors for callouts, canvas, graph and syntax */
+    --nm-red: #a33b3f;
+    --nm-orange: #8e4d20;
+    --nm-yellow: #735b0d;
+    --nm-green: #306940;
+    --nm-cyan: #226673;
+    --nm-blue: #335da5;
+    --nm-purple: #6c4ba9;
+    --nm-pink: #993d6c;
 
-    --light-background: #ffffff;
-    --light-shadow-first: #949494;
-    --light-shadow-second: #ffffff;
+    /* T-5 Relief */
+    --nm-distance: 6px;
+    --nm-blur-factor: 2;
 
-    --dark-background: #1c1c1c;
-    --dark-shadow-first: #0a0a0a;
-    --dark-shadow-second: #111111;
+    /* T-6 Radii */
+    --nm-radius: 16px;
+    --nm-radius-small: 10px;
+    --nm-radius-pill: 999px;
 
-    --background: light-dark(var(--light-background), var(--dark-background));
+    /* T-7 Spacing */
+    --nm-gap: 16px;
+    --nm-gap-inner: 6px;
+    --nm-header-height: 40px;
+    --nm-mobile-gap-factor: 0.5;
+    --nm-titlebar-height: 36px;
+    --nm-status-height: 28px;
 
-    --floating-background: var(--background);
-    --box-shadow: calc(var(--gap) / 2) calc(var(--gap) / 2) calc(var(--gap) * 2) light-dark(var(--light-shadow-first), var(--dark-shadow-first)),
-    calc(var(--gap) / 2 * -1) calc(var(--gap) / 2 * -1) calc(var(--gap) * 2) light-dark(var(--light-shadow-second), var(--dark-shadow-second));
-
-    --border-radius: 10px;
-    --overflow: unset;
+    --nm-transition: 120ms ease-out;
 }
 
-hr:not(.cm-editor hr) {
-    opacity: 0 !important;
+
+/* == 02 TOKENS: DERIVED ====================================================
+   Computed from section 01 (T-1, T-4, T-5). Custom properties are resolved
+   where they are declared, so these live on body next to the base tokens.
+   ========================================================================== */
+
+body {
+    /* T-1 Shadow and highlight colors */
+    --nm-shade: color-mix(in srgb, var(--nm-base), black var(--nm-shade-amount));
+    --nm-light: color-mix(in srgb, var(--nm-base), white var(--nm-light-amount));
+    --nm-surface: var(--nm-base);
+    --nm-surface-editor: var(--nm-base);
+    --nm-surface-sunken: color-mix(in srgb, var(--nm-base), var(--nm-shade) 12%);
+
+    /* T-2 Accent, selection, hover */
+    --nm-accent-active: var(--nm-accent);
+    --nm-accent-soft: color-mix(in srgb, var(--nm-accent-active) 16%, transparent);
+    --nm-selection: color-mix(in srgb, var(--nm-accent-active) 25%, transparent);
+    --nm-hover: color-mix(in srgb, var(--nm-shade) 22%, transparent);
+
+    /* T-4 Grooves instead of borders */
+    --nm-line: color-mix(in srgb, var(--nm-shade) 55%, var(--nm-base));
+    --nm-groove: 0 1px 0 var(--nm-light), inset 0 -1px 0 var(--nm-line);
+
+    /* T-5 Relief levels */
+    --nm-d: var(--nm-distance);
+    --nm-d-small: calc(var(--nm-distance) / 2);
+    --nm-blur: calc(var(--nm-distance) * var(--nm-blur-factor));
+    --nm-blur-small: calc(var(--nm-d-small) * var(--nm-blur-factor));
+    --nm-raised:
+        var(--nm-d) var(--nm-d) var(--nm-blur) var(--nm-shade),
+        calc(var(--nm-d) * -1) calc(var(--nm-d) * -1) var(--nm-blur) var(--nm-light);
+    --nm-raised-small:
+        var(--nm-d-small) var(--nm-d-small) var(--nm-blur-small) var(--nm-shade),
+        calc(var(--nm-d-small) * -1) calc(var(--nm-d-small) * -1) var(--nm-blur-small) var(--nm-light);
+    --nm-raised-large:
+        calc(var(--nm-d) * 2) calc(var(--nm-d) * 2) calc(var(--nm-blur) * 2) var(--nm-shade),
+        calc(var(--nm-d) * -2) calc(var(--nm-d) * -2) calc(var(--nm-blur) * 2) var(--nm-light);
+    --nm-inset:
+        inset var(--nm-d-small) var(--nm-d-small) var(--nm-blur-small) var(--nm-shade),
+        inset calc(var(--nm-d-small) * -1) calc(var(--nm-d-small) * -1) var(--nm-blur-small) var(--nm-light);
+    --nm-inset-small:
+        inset calc(var(--nm-d-small) * 0.66) calc(var(--nm-d-small) * 0.66) calc(var(--nm-blur-small) * 0.66) var(--nm-shade),
+        inset calc(var(--nm-d-small) * -0.66) calc(var(--nm-d-small) * -0.66) calc(var(--nm-blur-small) * 0.66) var(--nm-light);
+    --nm-focus-ring: 0 0 0 2px color-mix(in srgb, var(--nm-accent-active) 55%, transparent);
 }
 
-.cm-editor img {
-    border-radius: var(--border-radius) !important;
+
+/* == 03 OBSIDIAN MAPPING ===================================================
+   Obsidian's own variables point to our tokens. This styles most of the app
+   (and plugins) without touching individual elements (V principle 2).
+   ".is-mobile.theme-*" is listed because Obsidian sets its own, more
+   specific base colors there on phones.
+   ========================================================================== */
+
+body.theme-light,
+body.theme-dark,
+body.is-mobile.theme-light,
+body.is-mobile.theme-dark {
+    /* Backgrounds */
+    --background-primary: var(--nm-surface);
+    --background-primary-alt: var(--nm-surface-sunken);
+    --background-secondary: var(--nm-surface);
+    --background-secondary-alt: var(--nm-surface-sunken);
+    --background-modifier-hover: var(--nm-hover);
+    --background-modifier-active-hover: var(--nm-hover);
+    --background-modifier-border: var(--nm-line);
+    --background-modifier-border-hover: var(--nm-line);
+    --background-modifier-border-focus: var(--nm-accent-active);
+    --background-modifier-form-field: var(--nm-surface);
+    --background-modifier-box-shadow: color-mix(in srgb, var(--nm-shade) 50%, transparent);
+    --background-modifier-error: var(--nm-red);
+    --background-modifier-error-hover: var(--nm-red);
+    --background-modifier-success: var(--nm-green);
+    --background-modifier-cover: color-mix(in srgb, var(--nm-base) 55%, transparent);
+
+    /* Text */
+    --text-normal: var(--nm-text);
+    --text-muted: var(--nm-text-muted);
+    --text-faint: var(--nm-text-faint);
+    --text-on-accent: var(--nm-on-accent);
+    --text-on-accent-inverted: var(--nm-on-accent);
+    --text-accent: var(--nm-accent-active);
+    --text-accent-hover: var(--nm-accent-active);
+    --text-selection: var(--nm-selection);
+    --text-highlight-bg: color-mix(in srgb, var(--nm-yellow) 28%, transparent);
+    --text-error: var(--nm-red);
+    --text-success: var(--nm-green);
+    --text-warning: var(--nm-orange);
+
+    /* Interactive */
+    --color-accent: var(--nm-accent-active);
+    --color-accent-1: var(--nm-accent-active);
+    --color-accent-2: var(--nm-accent-active);
+    --interactive-normal: var(--nm-surface);
+    --interactive-hover: var(--nm-surface);
+    --interactive-accent: var(--nm-accent-active);
+    --interactive-accent-hover: color-mix(in srgb, var(--nm-accent-active) 88%, black);
+
+    /* Geometry */
+    --divider-color: var(--nm-line);
+    --divider-color-hover: var(--nm-accent-active);
+    --radius-s: calc(var(--nm-radius-small) * 0.6);
+    --radius-m: var(--nm-radius-small);
+    --radius-l: var(--nm-radius);
+    --radius-xl: var(--nm-radius);
+    --input-radius: var(--nm-radius-small);
+    --button-radius: var(--nm-radius-small);
+    --input-shadow: var(--nm-raised-small);
+    --input-shadow-hover: var(--nm-raised-small);
+    --shadow-xs: var(--nm-raised-small);
+    --shadow-s: var(--nm-raised-small);
+    --shadow-l: var(--nm-raised);
+
+    /* Workspace */
+    --header-height: var(--nm-header-height);
+    --titlebar-background: var(--nm-base);
+    --titlebar-background-focused: var(--nm-base);
+    --titlebar-border-width: 0;
+    --ribbon-background: var(--nm-surface);
+    --ribbon-background-collapsed: var(--nm-surface);
+    --tab-container-background: transparent;
+    --tab-outline-width: 0;
+    --tab-outline-color: transparent;
+    --tab-text-color: var(--nm-text-muted);
+    --tab-text-color-focused: var(--nm-text-muted);
+    --tab-text-color-active: var(--nm-text);
+    --tab-text-color-focused-active: var(--nm-text);
+    --tab-text-color-focused-active-current: var(--nm-text);
+    --status-bar-background: var(--nm-surface);
+    --status-bar-border-width: 0;
+    --status-bar-radius: var(--nm-radius-small);
+    --status-bar-text-color: var(--nm-text-muted);
+    --workspace-background-translucent: color-mix(in srgb, var(--nm-base) 70%, transparent);
+
+    /* Modals, prompts, menus */
+    --modal-background: var(--nm-surface);
+    --modal-border-width: 0;
+    --modal-radius: var(--nm-radius);
+    --prompt-border-width: 0;
+    --menu-border-width: 0;
+    --menu-radius: var(--nm-radius-small);
+    --menu-background: var(--nm-surface);
+
+    /* Settings groups (C-29, Obsidian 1.14) */
+    --setting-items-background: var(--nm-surface);
+    --setting-items-border-width: 0;
+    --setting-items-radius: var(--nm-radius);
+    --setting-items-divider-color: var(--nm-line);
+
+    /* Toggles and sliders (C-28): a round knob with room around it.
+       Obsidian makes the knob wide and flat on macOS; this outranks that. */
+    --toggle-radius: var(--nm-radius-pill);
+    --toggle-thumb-radius: var(--nm-radius-pill);
+    --toggle-thumb-color: var(--nm-surface);
+    --toggle-border-width: 3px;
+    --toggle-width: 42px;
+    --toggle-thumb-width: 18px;
+    --toggle-thumb-height: 18px;
+    --toggle-s-border-width: 3px;
+    --toggle-s-width: 38px;
+    --toggle-s-thumb-width: 16px;
+    --toggle-s-thumb-height: 16px;
+    --toggle-thumb-opacity-active: 1;
+    --slider-track-background: var(--nm-surface-sunken);
+    --slider-thumb-border-width: 0;
+    --slider-thumb-radius: var(--nm-radius-pill);
+
+    /* Links (C-7) */
+    --link-color: var(--nm-accent-active);
+    --link-color-hover: var(--nm-accent-active);
+    --link-external-color: var(--nm-accent-active);
+    --link-external-color-hover: var(--nm-accent-active);
+    --link-unresolved-color: var(--nm-text-muted);
+    --link-unresolved-opacity: 1;
+    --link-unresolved-decoration-color: var(--nm-line);
+
+    /* Tags and pills (C-16, C-17) */
+    --tag-background: transparent;
+    --tag-background-hover: transparent;
+    --tag-border-width: 0;
+    --tag-color: var(--nm-accent-active);
+    --tag-color-hover: var(--nm-accent-active);
+    --pill-border-width: 0;
+    --pill-background: transparent;
+    --pill-background-hover: transparent;
+
+    /* Graph (C-22). Obsidian reads these when it draws. */
+    --graph-node: var(--nm-text-muted);
+    --graph-node-unresolved: var(--nm-text-faint);
+    --graph-node-focused: var(--nm-accent-active);
+    --graph-node-tag: var(--nm-green);
+    --graph-node-attachment: var(--nm-orange);
+    --graph-line: var(--nm-line);
+    --graph-text: var(--nm-text);
+
+    /* Callout and canvas colors as RGB triplets come from section 08 */
+    --color-red: var(--nm-red);
+    --color-orange: var(--nm-orange);
+    --color-yellow: var(--nm-yellow);
+    --color-green: var(--nm-green);
+    --color-cyan: var(--nm-cyan);
+    --color-blue: var(--nm-blue);
+    --color-purple: var(--nm-purple);
+    --color-pink: var(--nm-pink);
 }
 
-.workspace-ribbon.mod-left:before {
-    display: none !important;
+
+/* == 03b DARK MODE =========================================================
+   Only base tokens change (A-5). The derived tokens in section 02 pick up
+   the new values because they are declared on the same element.
+   ========================================================================== */
+
+body.theme-dark {
+    --nm-base: #2b2f36;
+    --nm-shade-amount: var(--nm-shade-dark);
+    --nm-light-amount: var(--nm-light-dark);
+
+    --nm-text: #dfe3ea;
+    --nm-text-muted: #a3abb7;
+    --nm-text-faint: #7b838f;
+    --nm-accent: #8aa2ff;
+    --nm-on-accent: #14171c;
+
+    --nm-red: #ef8589;
+    --nm-orange: #eba16a;
+    --nm-yellow: #dcc068;
+    --nm-green: #7cc792;
+    --nm-cyan: #6cc3d1;
+    --nm-blue: #82aaf0;
+    --nm-purple: #b49af0;
+    --nm-pink: #ec8fbe;
 }
 
-body:not(.show-left-sidebar) .workspace-ribbon.mod-left {
-    width: 0px;
-    padding: 0px;
-    flex: unset;
-    margin: 0px;
-    pointer-events: none;
+
+/* == 04 CLASS TOGGLES ======================================================
+   Effects of the nm-* classes set by Style Settings (S-5).
+   ========================================================================== */
+
+body.nm-obsidian-accent {
+    --nm-accent-active: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+}
+
+body.nm-paper-editor {
+    --nm-surface-editor: color-mix(in srgb, var(--nm-base), white 35%);
+}
+
+body.theme-dark.nm-paper-editor {
+    --nm-surface-editor: color-mix(in srgb, var(--nm-base), white 4%);
+}
+
+body.nm-hide-status-bar .status-bar {
+    display: none;
+}
+
+body.nm-no-motion {
+    --nm-transition: 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body {
+        --nm-transition: 0s;
+    }
 }
 
 
-.mod-left-split .mod-top-left-space .workspace-tab-header-container,
-.workspace-ribbon.side-dock-ribbon.mod-left,
-.workspace-tab-header-container-inner,
-.workspace-sidedock-vault-profile{
-    border: none !important;
+/* == 05 BACKGROUND =========================================================
+   One material: the background behind the panels is the base color (L-2).
+   ========================================================================== */
+
+body,
+.app-container,
+.horizontal-main-container,
+.workspace {
+    background-color: var(--nm-base);
 }
 
-.workspace,
-.workspace-split {
-    background: var(--background) !important;
+.workspace-split,
+.workspace-split.mod-root,
+.workspace-split.mod-sidedock,
+.titlebar {
+    background: transparent;
 }
 
-body:not(.mod-macos) .sidebar-toggle-button.mod-left,
-.workspace-split.mod-vertical.mod-root,
-.mod-left-split .mod-top-left-space .workspace-tab-header-container,
-.workspace-ribbon.side-dock-ribbon.mod-left,
-.workspace-sidedock-vault-profile,
-.workspace-split.mod-horizontal.mod-sidedock.mod-right-split,
-.mod-left-split .mod-top-left-space .workspace-tab-container .workspace-leaf {
-    background: var(--floating-background) !important;
-    border-radius: var(--border-radius) !important;
-    overflow: hidden !important;
-    box-shadow: var(--box-shadow);
+
+/* == 06 LAYOUT =============================================================
+   Panels, spacing, ribbon and status bar (L-1 to L-8).
+   Rule L-3: style by type, never by position.
+   ========================================================================== */
+
+/* L-1 Spacing between panels and to the window edge */
+body:not(.is-mobile) .workspace {
+    position: relative;
+    gap: var(--nm-gap);
+    padding: var(--nm-gap);
+    /* L-6 Room for the floating status bar below the panels */
+    padding-block-end: calc(var(--nm-status-height) + var(--nm-gap) * 2);
 }
 
-#editingToolbarModalBar,
-.workspace-split.mod-vertical.mod-root .workspace-tabs.mod-top .workspace-tab-header-container,
-.workspace-split.mod-horizontal.mod-sidedock.mod-right-split .mod-top-right-space .workspace-tab-header-container,
-.view-header,
-.view-content,
-.status-bar {
-    background: var(--floating-background) !important;
+body.nm-hide-status-bar:not(.is-mobile) .workspace {
+    padding-block-end: var(--nm-gap);
 }
 
-.status-bar {
-    background: var(--floating-background) !important;
-    border-radius: var(--border-radius) !important;
-    border-width: 1px;
+body:not(.is-mobile) .workspace-split {
+    gap: var(--nm-gap);
+    border: none;
 }
 
-.mod-fade:not(.mod-at-end):after {
-    background: linear-gradient(to right, transparent, var(--background));
+/* L-4.4 A collapsed sidebar must not leave a double gap behind */
+body:not(.is-mobile) .workspace:not(.is-left-sidedock-open) > .workspace-split.mod-left-split,
+body:not(.is-mobile) .workspace:not(.is-right-sidedock-open) > .workspace-split.mod-right-split {
+    margin-inline: calc(var(--nm-gap) / -2);
+    overflow: hidden;
+    visibility: hidden;
 }
 
-.workspace,
-.workspace-tabs.mod-top.mod-top-left-space,
-.workspace-split {
-    gap: var(--gap);
+/* L-1 The panels. The shadow lies outside the panel, so clipping the
+   panel's own content keeps the shadow intact (P-4). */
+body:not(.is-mobile) .workspace-tabs,
+body:not(.is-mobile) .workspace-ribbon.mod-primary,
+body:not(.is-mobile) .workspace-sidedock-vault-profile {
+    border: none;
+    border-radius: var(--nm-radius);
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-raised);
+    overflow: hidden;
 }
 
-.workspace-split.mod-horizontal.mod-sidedock.mod-right-split {
-    gap: 0;
+/* The split and the tab container must not clip the shadows */
+body:not(.is-mobile) .workspace-split,
+body:not(.is-mobile) .workspace-split.mod-root,
+body:not(.is-mobile) .workspace-split.mod-sidedock {
+    overflow: visible;
 }
 
-.workspace > *,
-.sidebar-toggle-button.mod-left,
-.mod-macos .sidebar-toggle-button.mod-right {
-    margin-block-start: var(--gap);
+.workspace-tab-container,
+.workspace-leaf {
+    background: transparent;
 }
 
-.workspace-ribbon.mod-left {
-    margin-block-start: calc(var(--header-height) + (var(--gap) * 2));
+/* L-2 A note keeps its writing surface (paper surface optional, E-9) */
+.workspace-leaf-content[data-type="markdown"] {
+    --background-primary: var(--nm-surface-editor);
+    background-color: var(--nm-surface-editor);
 }
 
-.horizontal-main-container .mod-right-split .workspace-tabs,
-.mod-right-split .workspace-tabs.mod-active,
-.mod-macos .sidebar-toggle-button.mod-left {
-    margin-block-start: 0;
+/* L-1 Resize handles stay invisible; the gap separates panels */
+.workspace-leaf-resize-handle {
+    --divider-color: transparent;
 }
 
-.workspace-ribbon.mod-left,
+/* Obsidian draws a divider on top of the vault profile */
 .workspace-sidedock-vault-profile {
-    margin-block-end: var(--gap);
+    --divider-color: transparent;
+    border-top: none;
 }
 
-.mod-right-split .mod-top-right-space .workspace-leaf-content .view-content {
+/* L-5 Ribbon (Obsidian calls the left ribbon "primary") */
+body:not(.is-mobile) .workspace-ribbon.mod-primary {
+    margin-block-start: 0;
+    border-inline-end: none;
+}
+
+/* Obsidian reserves a titlebar slot above the ribbon; the top strip does that job */
+body:not(.is-mobile) .workspace-ribbon.mod-primary::before {
+    display: none;
+}
+
+/* L-6 Status bar floats below the panels */
+body:not(.is-mobile) .status-bar {
+    inset-inline-end: var(--nm-gap);
+    inset-block-end: calc(var(--nm-gap) / 2);
+    min-height: var(--nm-status-height);
+    padding-inline: var(--nm-gap-inner);
+    border: none;
+    border-radius: var(--nm-radius-small);
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-raised-small);
+}
+
+/* L-7 Hidden window frame: a strip on top holds the window controls and
+   is the drag area */
+body.is-hidden-frameless:not(.is-fullscreen):not(.is-mobile) .workspace {
+    padding-block-start: var(--nm-titlebar-height);
+}
+
+/* L-7 Obsidian indents the top tab bars to make room for the window
+   controls; here they sit in the strip above, so the indent goes. The room
+   for the right sidebar toggle on macOS comes from a more specific Obsidian
+   rule and stays. */
+body.is-hidden-frameless:not(.is-fullscreen):not(.is-mobile) .workspace-tabs .workspace-tab-header-container {
+    padding-left: 0;
+}
+
+body.is-hidden-frameless:not(.is-fullscreen):not(.is-mobile):not(.mod-macos) .workspace-tabs .workspace-tab-header-container {
+    padding-right: 0;
+}
+
+body.is-hidden-frameless:not(.is-fullscreen):not(.is-mobile) .workspace::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: var(--nm-titlebar-height);
+    -webkit-app-region: drag;
+}
+
+
+/* == 07 WORKSPACE ==========================================================
+   Tab bars, view header, ribbon, status bar, scrollbars (C-1 to C-5).
+   ========================================================================== */
+
+/* C-1 The tab bar is part of its panel, separated by a groove (T-4) */
+.workspace-tabs .workspace-tab-header-container {
+    --sidebar-tab-container-background: transparent;
+    background-color: transparent;
+    border-bottom: none;
+    box-shadow: var(--nm-groove);
+}
+
+/* "body .workspace-tabs" outranks Obsidian's sidebar rules, which would
+   otherwise squeeze the tabs */
+body .workspace-tabs .workspace-tab-header-container .workspace-tab-header-container-inner {
+    align-items: center;
+    align-self: stretch;
+    gap: var(--nm-gap-inner);
+    margin: 0;
+    padding: 0 var(--nm-gap-inner);
+}
+
+/* C-1 Tabs: flat at rest, inset when active */
+.workspace-tab-header-container .workspace-tab-header {
+    height: calc(var(--nm-header-height) - var(--nm-gap-inner) * 2 - 2px);
+    padding: 0;
+    border-radius: var(--nm-radius-small);
+    background-color: transparent;
+    box-shadow: none;
+    transition: box-shadow var(--nm-transition), background-color var(--nm-transition);
+}
+
+/* Obsidian's curved tab corners do not fit the soft look (P-7) */
+.workspace-tab-header-container .workspace-tab-header::before,
+.workspace-tab-header-container .workspace-tab-header::after,
+.workspace-tab-header-inner::after {
+    display: none;
+}
+
+.workspace-tab-header-container .workspace-tab-header:not(.is-active):hover {
+    background-color: var(--nm-hover);
+    box-shadow: none;
+}
+
+.workspace-tab-header-container .workspace-tab-header.is-active {
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-inset-small);
+}
+
+.workspace-tab-header-inner,
+.workspace-tab-header-container .workspace-tab-header .workspace-tab-header-inner,
+.workspace-tab-header-container .workspace-tab-header:not(.is-active):hover .workspace-tab-header-inner {
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+}
+
+/* C-1 The focused tab group shows the accent on its active tab */
+body.is-focused .mod-active .workspace-tab-header-container .workspace-tab-header.is-active .workspace-tab-header-inner-icon,
+body.is-focused .mod-active .workspace-tab-header-container .workspace-tab-header.is-active .workspace-tab-header-inner-title {
+    color: var(--nm-accent-active);
+}
+
+/* C-1 "New tab", tab list and sidebar toggles are square icon buttons */
+.workspace-tab-header-new-tab,
+.workspace-tab-header-tab-list,
+.sidebar-toggle-button {
+    align-items: center;
+    padding-block: 0;
+}
+
+/* C-2 View header: on the panel, separated by a groove */
+.view-header {
+    border-bottom: none;
+    background-color: transparent;
+    box-shadow: var(--nm-groove);
+}
+
+.workspace-leaf-content[data-type="markdown"] .view-header {
+    box-shadow: none;
+}
+
+/* C-5 Scrollbars */
+body.theme-light,
+body.theme-dark,
+body.is-mobile.theme-light,
+body.is-mobile.theme-dark {
+    --scrollbar-bg: transparent;
+    --scrollbar-thumb-bg: color-mix(in srgb, var(--nm-shade) 70%, transparent);
+    --scrollbar-active-thumb-bg: var(--nm-shade);
+}
+
+
+/* == 08 EDITOR =============================================================
+   Elements inside notes (C-6 to C-19). Live Preview draws block elements
+   line by line, so there they get a flat sunken surface; the reading view
+   gets the full relief.
+   ========================================================================== */
+
+body.theme-light,
+body.theme-dark,
+body.is-mobile.theme-light,
+body.is-mobile.theme-dark {
+    /* C-6 Slightly calmer heading scale */
+    --h1-size: 1.75em;
+    --h2-size: 1.45em;
+    --h3-size: 1.25em;
+    --h4-size: 1.12em;
+    --h5-size: 1em;
+    --h6-size: 0.94em;
+    --h1-weight: 700;
+    --h2-weight: 700;
+    --h3-weight: 650;
+    --inline-title-size: var(--h1-size);
+
+    /* C-9 Lists */
+    --list-marker-color: var(--nm-text-muted);
+    --list-marker-color-collapsed: var(--nm-accent-active);
+    --indentation-guide-color: var(--nm-line);
+    --indentation-guide-color-active: var(--nm-text-faint);
+    --checkbox-radius: calc(var(--nm-radius-small) * 0.5);
+    --checkbox-color: var(--nm-accent-active);
+    --checkbox-color-hover: var(--nm-accent-active);
+    --checkbox-border-color: transparent;
+    --checkbox-border-color-hover: transparent;
+    --checkbox-marker-color: var(--nm-on-accent);
+    --checklist-done-color: var(--nm-text-muted);
+
+    /* C-10 Quotes */
+    --blockquote-border-thickness: 0;
+    --blockquote-background-color: var(--nm-surface-sunken);
+
+    /* C-11 Callouts: a light tint of the callout color on the material */
+    --nm-callout-tint: 7%;
+    --callout-border-width: 0;
+    --callout-radius: var(--nm-radius-small);
+    --callout-blend-mode: normal;
+    --callout-padding: 14px 18px;
+    /* Obsidian's quote callout uses a fixed light gray */
+    --callout-quote: var(--nm-text-muted);
+
+    /* C-12 Code */
+    --code-background: var(--nm-surface-sunken);
+    --code-normal: var(--nm-text);
+    --code-comment: var(--nm-text-faint);
+    --code-function: var(--nm-blue);
+    --code-important: var(--nm-orange);
+    --code-keyword: var(--nm-purple);
+    --code-operator: var(--nm-red);
+    --code-property: var(--nm-cyan);
+    --code-punctuation: var(--nm-text-muted);
+    --code-string: var(--nm-green);
+    --code-tag: var(--nm-red);
+    --code-value: var(--nm-orange);
+    --code-radius: var(--nm-radius-small);
+
+    /* C-13 Tables */
+    --table-border-color: var(--nm-line);
+    --table-border-width: 0;
+    --table-header-background: transparent;
+    --table-header-background-hover: transparent;
+    --table-row-background-hover: var(--nm-hover);
+    --table-header-weight: 650;
+
+    /* C-14 Embeds */
+    --embed-border-start: 0;
+    --embed-padding: 12px 18px;
+
+    /* C-15 Lines */
+    --hr-color: var(--nm-line);
+    --hr-thickness: 1px;
+
+    /* C-17 Properties */
+    --metadata-border-width: 0;
+    --metadata-property-background-hover: transparent;
+}
+
+/* C-6 Optional embossed headings (T-10): highlight above, shade below */
+body.nm-embossed-headings .markdown-rendered :is(h1, h2, h3, h4, h5, h6),
+body.nm-embossed-headings .markdown-source-view .HyperMD-header,
+body.nm-embossed-headings .inline-title {
+    text-shadow:
+        -1px -1px 0 var(--nm-light),
+        1px 1px 1px var(--nm-shade);
+}
+
+/* C-8 Highlights */
+.markdown-rendered mark,
+.markdown-source-view .cm-highlight {
+    border-radius: 4px;
+    padding-inline: 2px;
+    color: var(--nm-text);
+}
+
+/* C-9 Checkboxes are inset; checked ones fill with the accent */
+input[type="checkbox"] {
+    border: none;
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-inset-small);
+}
+
+input[type="checkbox"]:checked {
+    background-color: var(--nm-accent-active);
+    box-shadow: var(--nm-raised-small);
+}
+
+input[type="checkbox"]:focus-visible {
+    box-shadow: var(--nm-inset-small), var(--nm-focus-ring);
+}
+
+/* C-10 Quotes in the reading view are an inset surface */
+.markdown-rendered blockquote {
+    padding: 12px 18px;
+    border-radius: var(--nm-radius-small);
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-inset);
+}
+
+/* C-11 Callouts: raised cards with a light tint of their color */
+.callout {
+    border: none;
+    background-color: color-mix(in srgb, var(--callout-color) var(--nm-callout-tint), var(--nm-surface-editor));
+    box-shadow: var(--nm-raised-small);
+}
+
+.callout-content .callout {
+    box-shadow: var(--nm-inset-small);
+}
+
+/* Even spacing: the last paragraph's margin would double the bottom padding */
+.callout-content > :last-child {
     margin-block-end: 0;
 }
 
-.is-mobile .workspace-drawer.mod-left {
-    margin-block-end: calc(var(--gap) * 2);
-    margin-block-start: calc(4rem - 5px);
-    padding-block-start: calc(var(--gap) * 0.5) !important;
-}
-
-.workspace-ribbon.mod-left,
-.sidebar-toggle-button.mod-left,
-body:not(.show-ribbon) .workspace-split.mod-horizontal.mod-sidedock.mod-left-split,
-body:not(.show-ribbon) .workspace:not(.is-left-sidedock-open) .workspace-split.mod-vertical.mod-root,
-.is-mobile .workspace-split.mod-vertical.mod-root {
-    margin-inline-start: var(--gap);
-}
-
-.mod-macos .sidebar-toggle-button.mod-left {
-    margin-inline-start: 0;
-}
-
-.workspace-split.mod-right-split,
-.mod-macos .sidebar-toggle-button.mod-right,
-.workspace:not(.is-right-sidedock-open) .workspace-split.mod-vertical.mod-root {
-    margin-inline-end: var(--gap);
-}
-
-body:not(.show-ribbon) .workspace.is-left-sidedock-open .sidebar-toggle-button.mod-left {
-    margin: 0 !important;
-}
-
-.workspace-tabs.mod-top:not(.mod-top-right-space) .workspace-tab-header-container,
-.workspace-tabs.mod-top:not(.mod-top-right-space) .workspace-tab-header-container-inner,
-.workspace-split.mod-horizontal.mod-sidedock.mod-right-split .workspace-tab-header-container,
-.workspace-split.mod-horizontal.mod-sidedock.mod-right-split .workspace-tab-header-container-inner {
-    padding: 0 !important;
-    padding-inline: calc(1rem / 4) !important;
-    margin: 0 !important;
-}
-
-.workspace-tabs.mod-top .workspace-tab-header-container {
-    padding-inline-start: 0 !important;
-}
-
-.workspace-tabs.mod-top .workspace-tab-header-container-inner,
-.workspace-split.mod-vertical.mod-root .workspace-tab-header-container-inner {
-    padding-inline: 12px !important;
-    margin-block: 0 !important;
-}
-
-.nav-header,
-.workspace-leaf-content .view-header-left {
-    height: var(--header-height) !important;
-}
-
-.workspace-split.mod-vertical.mod-root,
-.workspace-split.mod-horizontal.mod-sidedock.mod-right-split {
-    height: calc(100% - var(--gap) * 2);
-}
-
-.workspace-split.mod-horizontal.mod-sidedock.mod-left-split {
-    height: calc(100% - var(--gap) * 1);
-}
-
-.mod-left-split .mod-top-left-space .workspace-tab-container .workspace-leaf,
-.mod-right-split .mod-top-right-space .workspace-tab-container .workspace-leaf {
-    height: 100%;
-}
-
-.workspace-tab-header-new-tab,
-.sidebar-toggle-button,
-.workspace-tab-header-tab-list {
-    aspect-ratio: 1 / 1;
+/* Live Preview wraps a callout in a block with forced paint containment,
+   which clips the shadow, and margins there are forced to 0. Padding the
+   block by the shadow's reach and shifting it back keeps the callout
+   aligned with the text and its shadow inside the painted area. */
+.markdown-source-view.mod-cm6 .cm-embed-block.cm-callout {
+    --nm-room: calc(var(--nm-d-small) + var(--nm-blur-small));
+    --embed-block-shadow-hover: none;
     position: relative;
+    inset-inline-start: calc(var(--nm-room) * -1);
+    width: calc(100% + var(--nm-room) * 2);
+    padding: var(--nm-room);
+    border-radius: 0;
+    background-color: transparent;
+    box-shadow: none;
 }
 
-.workspace-tab-header-new-tab span,
-.workspace-tab-header-tab-list span {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+/* C-12 Inline code and code blocks */
+.markdown-rendered code,
+.markdown-source-view .cm-inline-code {
+    border-radius: calc(var(--nm-radius-small) * 0.5);
 }
 
-.workspace-split.mod-vertical.mod-root .workspace-tab-header-container-inner,
-.workspace,
-.workspace-tabs,
-.workspace-tab-container,
-.workspace-leaf,
-.workspace-leaf-content,
-.workspace-ribbon,
-.workspace-split,
-.view-header,
-.view-content {
-    overflow: var(--overflow) !important;
-}
-
-div[class^="div-scrollTo"] {
-    right: var(--gap) !important;
-}
-
-.div-scrollToBottom {
-    bottom: calc(var(--gap) * 4);
-}
-
-.div-scrollToTop {
-    bottom: calc(var(--gap) * 4 + var(--scroll-button-offset));
-}
-
-.div-scrollToCursor {
-    bottom: calc(var(--gap) * 4 + (var(--scroll-button-offset) * 2));
-}
-
-.status-bar {
-    right: calc(var(--gap) * 2) !important;
-    bottom: calc(var(--gap) * 2) !important;
-}
-
-.workspace-tab-header-inner {
-    padding-block: 0 !important;
-    margin-block: var(--header-padding);
-    height: calc(100% - (var(--header-padding) * 2));
-}
-
-.workspace-tab-header-container-inner {
-    padding-inline: var(--header-padding) !important;
-    border-bottom: none !important;
-}
-
-.workspace-tab-header.tappable.is-active {
-    margin-block-start: var(--header-padding);
+/* C-12 Inline code is pressed into the text. A small, crisp relief: the
+   large one smears at line height. */
+.markdown-rendered :not(pre) > code,
+.markdown-source-view .cm-inline-code:not(.cm-formatting) {
+    background-color: var(--nm-surface-editor);
     box-shadow:
-            calc(-1 * var(--tab-outline-width)) 0 0 var(--tab-outline-color),
-            var(--tab-outline-width) 0 0 var(--tab-outline-color),
-            0 calc(-1 * var(--tab-outline-width)) 0 var(--tab-outline-color),
-            0 var(--tab-outline-width) 0 var(--tab-outline-color);
+        inset 1px 1px 2px var(--nm-shade),
+        inset -1px -1px 2px var(--nm-light);
 }
 
-.workspace-tab-header.tappable.is-active:not(.workspace-tabs.mod-top .workspace-tab-header.tappable.is-active),
-.workspace-split.mod-left-split .workspace-tabs.mod-top-left-space .workspace-tab-header-container-inner .is-active {
-    margin-block-start: var(--header-padding);
-    height: calc(100% - (var(--header-padding) * 2));
+.markdown-rendered pre {
+    border: none;
+    border-radius: var(--nm-radius-small);
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-inset);
 }
 
-.workspace-split.mod-right-split .workspace-tabs.mod-top-right-space .workspace-tab-header-container .workspace-tab-header-container-inner,
-.workspace-split.mod-horizontal.mod-sidedock.mod-right-split .workspace-tabs.mod-top.mod-top-right-space .workspace-tab-header.tappable:not(.is-active) .workspace-tab-header-inner {
-    height: calc(100% - (var(--header-padding) * 1));
-    overflow: var(--overflow);
+.markdown-rendered pre code {
+    background-color: transparent;
 }
 
-.workspace-tabs.mod-top .workspace-tab-header.tappable.is-active .workspace-tab-header-inner {
+.markdown-rendered pre .copy-code-button {
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.markdown-rendered pre .copy-code-button:hover {
+    box-shadow: var(--nm-raised-small);
+}
+
+/* C-13 Tables in an inset surface; rows separated by lines */
+.markdown-rendered table {
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: var(--nm-radius-small);
+    box-shadow: var(--nm-inset-small);
+}
+
+.markdown-rendered :is(th, td) {
+    border: none;
+    border-bottom: 1px solid var(--nm-line);
+}
+
+.markdown-rendered tr:last-child td {
+    border-bottom: none;
+}
+
+/* C-14 Images are raised (optional, nm-plain-images) */
+body:not(.nm-plain-images) .markdown-rendered img:not(.emoji),
+body:not(.nm-plain-images) .markdown-source-view .image-embed img:not(.emoji) {
+    border-radius: var(--nm-radius-small);
+    box-shadow: var(--nm-raised);
+}
+
+/* C-14 Embedded notes are inset */
+.markdown-rendered .markdown-embed,
+.markdown-source-view .markdown-embed {
+    border-radius: var(--nm-radius-small);
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-inset);
+}
+
+/* C-15 Lines are grooves (P-6) */
+.markdown-rendered hr,
+.markdown-source-view .hr hr {
+    border: none;
+    border-top: 1px solid var(--nm-line);
+    box-shadow: 0 1px 0 var(--nm-light);
+}
+
+/* C-16 Tags: raised pills in the reading view, soft pills in Live Preview
+   (there a tag is split into two spans, a shadow would show the seam) */
+.markdown-rendered a.tag {
+    padding: 1px 9px;
+    border-radius: var(--nm-radius-pill);
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-raised-small);
+}
+
+.markdown-rendered a.tag:hover {
+    box-shadow: var(--nm-inset-small);
+}
+
+.markdown-source-view .cm-hashtag {
+    background-color: var(--nm-accent-soft);
+}
+
+/* C-17 Properties: an inset box; pills inside are raised */
+.metadata-container {
+    padding: 10px 14px;
+    border-radius: var(--nm-radius-small);
+    background-color: var(--nm-surface-editor);
+    box-shadow: var(--nm-inset);
+}
+
+/* On mobile Obsidian gives the content a second surface inside the box */
+.metadata-container .metadata-content {
+    background-color: transparent;
+}
+
+.metadata-container .multi-select-pill {
+    background-color: var(--nm-surface-editor);
+    box-shadow: var(--nm-raised-small);
+}
+
+/* C-19 Search bar in the editor */
+.document-search-container {
+    border: none;
+    border-radius: var(--nm-radius-small);
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-raised-small);
+}
+
+
+/* == 09 SIDEBARS AND VIEWS =================================================
+   File explorer, search, graph, canvas, bases (C-20 to C-25).
+   ========================================================================== */
+
+body.theme-light,
+body.theme-dark,
+body.is-mobile.theme-light,
+body.is-mobile.theme-dark {
+    /* C-20 Navigation items */
+    --nav-item-background-hover: var(--nm-hover);
+    --nav-item-background-active: var(--nm-surface);
+    --nav-item-background-selected: var(--nm-accent-soft);
+    --nav-item-color-active: var(--nm-text);
+    --nav-indentation-guide-color: var(--nm-line);
+    --nav-item-radius: var(--nm-radius-small);
+
+    /* C-23 Canvas */
+    --canvas-background: var(--nm-surface);
+    --canvas-dot-pattern: var(--nm-line);
+    --shadow-stationary: var(--nm-raised-small);
+}
+
+/* C-20a Connected tree lines in the file explorer:
+     Folder
+     ├─ file
+     ├─ folder
+     │  └─ file
+     └─ file
+   Each item draws its own piece: a vertical line (full height, or down to
+   its own row for the last item) and a horizontal stub. The lines are
+   grooves: a shade line with a highlight next to it. All offsets come from
+   Obsidian's indentation variables (geometry from Neobrutalism C-20a). */
+.nav-files-container {
+    --nm-tree-pad-y: var(--size-4-1);
+    --nm-tree-bridge: var(--size-2-1);
+    --nm-tree-line: 1px;
+    --nm-tree-stub-gap: 3px;
+    /* The vertical padding is a token so the lines can find the middle of a
+       row; the row gap is set with a unit (Obsidian uses a unitless 0 on
+       mobile, which calc() cannot use) */
+    --nav-item-padding: var(--nm-tree-pad-y) var(--size-4-2) var(--nm-tree-pad-y) var(--size-4-6);
+    --nav-item-margin-bottom: var(--nm-tree-bridge);
+    /* Where a row's content starts, relative to its item */
+    --nm-tree-content-x: var(--size-4-6);
+    /* One indentation level, as Obsidian lays out .tree-item-children */
+    --nm-tree-indent: calc(var(--nav-item-children-margin-start, 12px) + var(--nav-indentation-guide-width, 1px) + var(--nav-item-children-padding-start, 4px));
+    /* The chevron sits left of the name */
+    --nm-tree-icon-x: calc(var(--nm-tree-content-x) - var(--size-4-5));
+    --nm-tree-icon-size: var(--size-4-4);
+    /* The guide runs below the parent's chevron, relative to a child item */
+    --nm-tree-guide-x: calc(var(--nm-tree-icon-x) + var(--nm-tree-icon-size) / 2 - var(--nm-tree-indent));
+    /* Vertical center of a row */
+    --nm-tree-row-center: calc(var(--nm-tree-pad-y) + var(--nav-item-size) * var(--line-height-tight) / 2);
+}
+
+body:not(.nm-no-tree-lines) .nav-files-container {
+    --nav-indentation-guide-color: transparent;
+}
+
+body:not(.nm-no-tree-lines) .nav-files-container .nav-folder-children > .tree-item {
     position: relative;
-    overflow: var(--overflow) !important;
-    isolation: isolate;
 }
 
-.workspace-tabs.mod-top .workspace-tab-header.tappable.is-active .workspace-tab-header-inner:before {
+body:not(.nm-no-tree-lines) .nav-files-container .nav-folder-children > .tree-item::before,
+body:not(.nm-no-tree-lines) .nav-files-container .nav-folder-children > .tree-item::after {
+    content: "";
     position: absolute;
-    content: '';
-    background: var(--background);
-    width: calc(100% + 16px);
-    height: 4px;
-    bottom: -12px;
-    z-index: 1;
-    left: 50%;
-    transform: translateX(-50%);
+    pointer-events: none;
+    background-color: var(--nm-line);
 }
 
-.workspace-split.mod-horizontal.mod-sidedock.mod-left-split .workspace-tab-header-inner:before,
-.workspace-split.mod-horizontal.mod-sidedock.mod-right-split .workspace-tab-header-inner:before {
-    display: none !important;
+/* Vertical groove: from the gap above the item to the gap below it */
+body:not(.nm-no-tree-lines) .nav-files-container .nav-folder-children > .tree-item::before {
+    inset-inline-start: calc(var(--nm-tree-guide-x) - var(--nm-tree-line) / 2);
+    top: calc(-1 * var(--nm-tree-bridge));
+    bottom: calc(-1 * var(--nm-tree-bridge));
+    width: var(--nm-tree-line);
+    box-shadow: 1px 0 0 var(--nm-light);
 }
 
-.mod-windows .workspace-split.mod-vertical.mod-root .workspace-tabs.mod-active.mod-top.mod-top-right-space .workspace-tab-header-container {
-    padding-inline-end: calc(var(--size-4-2) + var(--frame-right-space)) !important;
+/* Last item of a folder: the groove stops at its own row ("└"). Obsidian's
+   virtual-scroll spacer is the first child, so the last item is :last-child. */
+body:not(.nm-no-tree-lines) .nav-files-container .nav-folder-children > .tree-item:last-child::before {
+    bottom: auto;
+    height: calc(var(--nm-tree-row-center) + var(--nm-tree-bridge) + var(--nm-tree-line) / 2);
+}
+
+/* Horizontal groove, ends just before the chevron or the file name */
+body:not(.nm-no-tree-lines) .nav-files-container .nav-folder-children > .tree-item::after {
+    inset-inline-start: calc(var(--nm-tree-guide-x) + var(--nm-tree-line) / 2);
+    top: calc(var(--nm-tree-row-center) - var(--nm-tree-line) / 2);
+    height: var(--nm-tree-line);
+    width: calc(var(--nm-tree-icon-x) - var(--nm-tree-stub-gap) - var(--nm-tree-guide-x));
+    box-shadow: 0 1px 0 var(--nm-light);
+}
+
+body:not(.nm-no-tree-lines) .nav-files-container .nav-folder-children > .tree-item.nav-file::after {
+    width: calc(var(--nm-tree-content-x) - var(--nm-tree-stub-gap) - var(--nm-tree-guide-x) - var(--nm-tree-line));
+}
+
+/* C-20 The open file is pressed in */
+.tree-item-self.is-active,
+.nav-file-title.is-active {
+    box-shadow: var(--nm-inset-small);
+}
+
+/* C-20 Keyboard focus and the item of an open context menu */
+.tree-item-self.has-focus {
+    box-shadow: var(--nm-focus-ring);
+}
+
+.tree-item-self.is-active.has-focus {
+    box-shadow: var(--nm-inset-small), var(--nm-focus-ring);
+}
+
+/* C-21 Search results */
+.search-result-file-matched-text {
+    border-radius: 3px;
+    background-color: var(--nm-accent-soft);
+    color: var(--nm-text);
+}
+
+/* C-22 Graph controls as a raised panel */
+.graph-controls {
+    border: none;
+    border-radius: var(--nm-radius);
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-raised);
+}
+
+/* C-23 Canvas cards: raised, colored cards get a light tint */
+.canvas-node-container {
+    border-color: transparent;
+    border-radius: var(--nm-radius-small);
+    background-color: var(--nm-surface);
+}
+
+.canvas-node[class*="mod-canvas-color-"] > .canvas-node-container {
+    border-color: color-mix(in srgb, var(--canvas-color) 45%, transparent);
+    background-color: color-mix(in srgb, var(--canvas-color) 10%, var(--nm-surface));
+}
+
+.canvas-node-group .canvas-node-container {
+    background-color: color-mix(in srgb, var(--canvas-color, transparent) 5%, transparent);
+    box-shadow: var(--nm-inset);
+}
+
+.canvas-controls .canvas-control-group,
+.canvas-card-menu {
+    border: none;
+    border-radius: var(--nm-radius-small);
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-raised-small);
+}
+
+
+/* == 10 INTERFACE ELEMENTS =================================================
+   Buttons, inputs, toggles, modals, menus (C-26 to C-34).
+   ========================================================================== */
+
+/* C-26 Buttons: raised, pressed in when clicked */
+button:not(.clickable-icon) {
+    border: none;
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-raised-small);
+    transition: box-shadow var(--nm-transition), color var(--nm-transition);
+}
+
+button:not(.clickable-icon):hover {
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-raised);
+}
+
+button:not(.clickable-icon):active {
+    box-shadow: var(--nm-inset-small);
+}
+
+button.mod-cta,
+button.mod-cta:hover {
+    background-color: var(--nm-accent-active);
+    color: var(--nm-on-accent);
+}
+
+button.mod-warning,
+button.mod-warning:hover {
+    background-color: var(--nm-red);
+    color: var(--nm-on-accent);
+}
+
+button:focus-visible {
+    box-shadow: var(--nm-raised-small), var(--nm-focus-ring);
+}
+
+/* C-27 Text inputs are inset */
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="url"],
+input[type="date"],
+input[type="datetime-local"],
+textarea {
+    border: none;
+    border-radius: var(--nm-radius-small);
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-inset-small);
+}
+
+input[type="text"]:focus,
+input[type="search"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="url"]:focus,
+textarea:focus {
+    box-shadow: var(--nm-inset-small), var(--nm-focus-ring);
+}
+
+/* C-30 The palette input is always focused; a ring would only add noise */
+.prompt-input-container input.prompt-input,
+.prompt-input-container input.prompt-input:focus {
+    border: none;
+    box-shadow: var(--nm-inset-small);
+}
+
+/* Property inputs (in notes and in Bases cells) sit in an inset box or a
+   table already */
+.metadata-container input,
+.metadata-container input:focus,
+input.metadata-input,
+input.metadata-input:focus {
+    box-shadow: none;
+    background-color: transparent;
+}
+
+/* C-28 Dropdowns look like buttons */
+.dropdown {
+    border: none;
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-raised-small);
+}
+
+.dropdown:hover {
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-raised);
+}
+
+/* C-28 Toggles: inset track, raised round knob, accent when on. The
+   shadows are small and crisp; at this size the large relief smears. When
+   on, the track's relief is tinted with the accent instead of gray. */
+.checkbox-container {
+    background-color: var(--nm-surface-sunken);
+    box-shadow:
+        inset 1.5px 1.5px 3px var(--nm-shade),
+        inset -1.5px -1.5px 3px var(--nm-light);
+}
+
+.checkbox-container.is-enabled {
+    background-color: var(--nm-accent-active);
+    box-shadow:
+        inset 1.5px 1.5px 3px color-mix(in srgb, var(--nm-accent-active), black 35%),
+        inset -1px -1px 2px color-mix(in srgb, var(--nm-accent-active), white 20%);
+}
+
+.checkbox-container::after {
+    background-color: var(--nm-surface);
+    box-shadow:
+        1px 1px 2px color-mix(in srgb, var(--nm-shade), black 15%),
+        -1px -1px 1px var(--nm-light);
+}
+
+/* On the accent a white highlight reads as a glow; only a shadow remains */
+.checkbox-container.is-enabled::after {
+    box-shadow: 1px 1px 2px color-mix(in srgb, var(--nm-accent-active), black 50%);
+}
+
+/* C-28 Sliders */
+input[type="range"] {
+    border-radius: var(--nm-radius-pill);
+    box-shadow: var(--nm-inset-small);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    border: none;
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-raised-small);
+}
+
+/* C-29 Modals float above everything */
+.modal {
+    border: none;
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-raised-large);
+}
+
+/* The settings window (Obsidian 1.14) is a modal that fills its window */
+body.is-popout-modal .modal {
+    box-shadow: none;
+}
+
+/* C-29 Settings navigation and groups */
+.vertical-tab-header,
+.vertical-tab-content-container,
+.vertical-tab-content {
+    background-color: var(--nm-surface);
+}
+
+.vertical-tab-nav-item {
+    border-radius: var(--nm-radius-small);
+}
+
+.vertical-tab-nav-item.is-active {
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-inset-small);
+    color: var(--nm-accent-active);
+    --icon-color: var(--nm-accent-active);
+}
+
+.setting-group .setting-items {
+    border: none;
+    box-shadow: var(--nm-raised-small);
+}
+
+/* C-30 Command palette, quick switcher, suggestions */
+.prompt,
+.suggestion-container {
+    border: none;
+    border-radius: var(--nm-radius);
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-raised-large);
+}
+
+.suggestion-item {
+    border-radius: var(--nm-radius-small);
+}
+
+.suggestion-item.is-selected {
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-inset-small);
+    color: var(--nm-accent-active);
+}
+
+/* C-31 Menus */
+.menu {
+    border: none;
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-raised);
+}
+
+.menu-item {
+    border-radius: calc(var(--nm-radius-small) * 0.7);
+}
+
+.menu-item.selected:not(.is-disabled):not(.is-label) {
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-inset-small);
+}
+
+/* C-32 Tooltips, notices, popovers */
+body.theme-light,
+body.theme-dark,
+body.is-mobile.theme-light,
+body.is-mobile.theme-dark {
+    --background-modifier-message: var(--nm-surface);
+}
+
+.tooltip {
+    color: var(--nm-text);
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-raised-small);
+}
+
+.notice {
+    border-radius: var(--nm-radius-small);
+    background-color: var(--nm-surface);
+    color: var(--nm-text);
+    box-shadow: var(--nm-raised);
+}
+
+.popover {
+    border: none;
+    border-radius: var(--nm-radius);
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-raised-large);
+}
+
+/* C-34 Keys */
+kbd {
+    border: none;
+    border-radius: 6px;
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-raised-small);
+}
+
+/* C-26 Icon buttons: flat at rest, raised on hover, inset when active */
+.clickable-icon {
+    border-radius: var(--nm-radius-small);
+    transition: box-shadow var(--nm-transition), color var(--nm-transition);
+}
+
+.clickable-icon:hover {
+    background-color: transparent;
+    box-shadow: var(--nm-raised-small);
+}
+
+.clickable-icon:active,
+.clickable-icon.is-active {
+    background-color: transparent;
+    box-shadow: var(--nm-inset-small);
+    color: var(--nm-accent-active);
+}
+
+.clickable-icon:focus-visible {
+    box-shadow: var(--nm-raised-small), var(--nm-focus-ring);
+}
+
+
+/* == 11 MOBILE =============================================================
+   Phones and tablets (L-9, C-35). Sidebars are drawers there and the main
+   area is a single split. Tablets use the desktop gap, phones a smaller one.
+   ========================================================================== */
+
+body.is-mobile {
+    --nm-gap-mobile: var(--nm-gap);
+    /* Obsidian's raised bars (navigation bar, toolbar) use these */
+    --raised-background: var(--nm-surface);
+    --raised-shadow: var(--nm-raised-small);
+    --raised-blur: none;
+}
+
+body.is-phone {
+    --nm-gap-mobile: calc(var(--nm-gap) * var(--nm-mobile-gap-factor));
+    --nm-distance: 4px;
+}
+
+/* L-9 The main area is a raised panel. Rounded clipping (overflow or
+   clip-path) around the view renders it black on mobile, so instead of
+   clipping, the panel gets a small inset: just enough that square content
+   stays inside the rounded corners. */
+.is-mobile .workspace-split.mod-root {
+    margin: var(--nm-gap-mobile);
+    border-radius: var(--nm-radius);
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-raised);
+    padding: calc(var(--nm-radius) * 0.3);
+}
+
+/* Obsidian fades the top and bottom of the view on phones with masks;
+   combined with the panel this renders the view black */
+.is-mobile .workspace-split.mod-root,
+.is-mobile .workspace-split.mod-root .view-content {
+    -webkit-mask-image: none;
+    mask-image: none;
+}
+
+/* L-9 Drawers are raised panels, rounded on the inner edge */
+.is-mobile .workspace-drawer {
+    --mobile-sidebar-background: var(--nm-surface);
+    border: none;
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-raised);
+}
+
+.is-mobile .workspace-drawer.mod-left {
+    border-start-end-radius: var(--nm-radius);
+    border-end-end-radius: var(--nm-radius);
+}
+
+.is-mobile .workspace-drawer.mod-right {
+    border-start-start-radius: var(--nm-radius);
+    border-end-start-radius: var(--nm-radius);
+}
+
+.workspace-drawer-ribbon {
+    border-inline-end: none;
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-groove);
+}
+
+/* C-35 Toolbar above the keyboard and the navigation bar. ".is-mobile" in
+   front matches Obsidian's ".is-mobile.is-floating-nav .mod-raised". */
+.is-mobile .mobile-toolbar-options-list-container.mod-raised,
+.is-mobile .mobile-toolbar-floating-options.mod-raised,
+.is-mobile .mobile-navbar.mod-raised {
+    border: none;
+    border-radius: var(--nm-radius);
+    background-color: var(--nm-surface);
+    box-shadow: var(--nm-raised-small);
+    -webkit-mask-image: none;
+    mask-image: none;
+}
+
+
+/* == 12 PLATFORMS ==========================================================
+   ========================================================================== */
+
+/* L-8 On macOS with the hidden frame Obsidian pins the right sidebar toggle
+   to the window corner (position: fixed, top: 0). Move it into the header
+   of the top right panel; Obsidian already reserves room there. The long
+   selector matches Obsidian's specificity. */
+body.mod-macos.is-hidden-frameless:not(.is-popout-window):not(.is-mobile) .sidebar-toggle-button.mod-secondary {
+    top: var(--nm-titlebar-height);
+    inset-inline-end: calc(var(--nm-gap) + var(--frame-right-space));
+    background-color: transparent;
+}
+
+body.mod-macos.is-hidden-frameless.is-fullscreen:not(.is-popout-window):not(.is-mobile) .sidebar-toggle-button.mod-secondary {
+    top: var(--nm-gap);
+}
+
+/* L-7 Translucent window: the background may shine through, the panels stay
+   solid. Obsidian marks its transparent backgrounds as important, so the
+   solid color is painted as a background-image layer above them (A-7). */
+body.is-translucent:not(.is-fullscreen),
+body.is-translucent:not(.is-fullscreen) .app-container {
+    background-color: transparent;
+}
+
+body.is-translucent:not(.is-fullscreen) .horizontal-main-container {
+    background-color: var(--workspace-background-translucent);
+}
+
+body.is-translucent:not(.is-fullscreen) .workspace-tabs,
+body.is-translucent:not(.is-fullscreen) .workspace-ribbon.mod-primary,
+body.is-translucent:not(.is-fullscreen) .workspace-sidedock-vault-profile,
+body.is-translucent:not(.is-fullscreen) .status-bar {
+    background-image: linear-gradient(var(--nm-surface), var(--nm-surface));
+}
+
+body.is-translucent:not(.is-fullscreen) .workspace-leaf-content[data-type="markdown"] {
+    background-image: linear-gradient(var(--nm-surface-editor), var(--nm-surface-editor));
 }
