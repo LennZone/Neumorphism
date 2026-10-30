@@ -410,7 +410,7 @@ body.is-mobile.theme-dark {
     --status-bar-border-width: 0;
     --status-bar-radius: var(--nm-radius-small);
     --status-bar-text-color: var(--nm-text-muted);
-    --workspace-background-translucent: color-mix(in srgb, var(--nm-base) 70%, transparent);
+    --workspace-background-translucent: var(--nm-base);
 
     /* Modals, prompts, menus */
     --modal-background: var(--nm-surface);
@@ -1565,16 +1565,12 @@ body.mod-macos.is-hidden-frameless.is-fullscreen:not(.is-popout-window):not(.is-
     top: var(--nm-gap);
 }
 
-/* L-7 Translucent window: the background may shine through, the panels stay
-   solid. Obsidian marks its transparent backgrounds as important, so the
-   solid color is painted as a background-image layer above them (A-7). */
-body.is-translucent:not(.is-fullscreen),
-body.is-translucent:not(.is-fullscreen) .app-container {
-    background-color: transparent;
-}
-
+/* L-7 Translucent window: everything stays solid. Neumorphism needs one
+   even surface; a blurred desktop behind the panels smears their relief.
+   Obsidian marks its transparent backgrounds as important, so the solid
+   color is painted as a background-image layer above them (A-7). */
 body.is-translucent:not(.is-fullscreen) .horizontal-main-container {
-    background-color: var(--workspace-background-translucent);
+    background-image: linear-gradient(var(--nm-base), var(--nm-base));
 }
 
 body.is-translucent:not(.is-fullscreen) .workspace-tabs,
