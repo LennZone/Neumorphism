@@ -40,4 +40,12 @@ Version 2.0 is a complete redesign. The Style Settings options have new IDs, so 
 
 ## Troubleshooting
 
-If something looks wrong, please open an issue in the repository with a screenshot and your Obsidian version.
+If something looks wrong, please [open an issue](https://github.com/LennZone/Neumorphism/issues/new/choose) with a screenshot and your Obsidian version.
+
+## Contributing
+
+Contributions are welcome. Please read the [contributing guide](CONTRIBUTING.md) and the [code of conduct](CODE_OF_CONDUCT.md) first.
+
+## License
+
+Neumorphism is released under the [MIT License](LICENSE). Versions up to 2.0.1 were released under the [Unlicense](https://unlicense.org/).
