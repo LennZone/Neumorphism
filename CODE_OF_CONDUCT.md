@@ -1,8 +1,8 @@
 # Code of Conduct
 
-## Our pledge
+## My pledge
 
-We want this project to be a friendly and welcoming place for everyone, regardless of age, body size, disability, ethnicity, gender identity and expression, level of experience, nationality, appearance, religion or sexual orientation.
+I want this project to be a friendly and welcoming place for everyone, regardless of age, body size, disability, ethnicity, gender identity and expression, level of experience, nationality, appearance, religion or sexual orientation.
 
 ## Expected behavior
 
@@ -19,9 +19,9 @@ We want this project to be a friendly and welcoming place for everyone, regardle
 
 ## Enforcement
 
-The maintainer may remove, edit or reject comments, commits, issues and pull requests that do not follow this Code of Conduct, and may block people from the project temporarily or permanently.
+I may remove, edit or reject comments, commits, issues and pull requests that do not follow this Code of Conduct, and may block people from the project temporarily or permanently.
 
-To report a problem, please contact the maintainer at contact@lennzone.com. All reports are handled confidentially.
+To report a problem, please contact me at contact@lennzone.com. I handle all reports confidentially.
 
 ## Attribution
 

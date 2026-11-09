@@ -13,7 +13,7 @@ Please [open an issue](https://github.com/LennZone/Neumorphism/issues/new/choose
 
 ## Suggesting a change
 
-For larger changes, please open an issue first so we can talk about the idea before you spend time on it. The theme follows a few strict design rules, and not every good idea fits them.
+For larger changes, please open an issue first so I can give feedback on the idea before you spend time on it. The theme follows a few strict design rules, and not every good idea fits them.
 
 ## Design rules
 
