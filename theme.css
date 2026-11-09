@@ -675,10 +675,14 @@ body.is-hidden-frameless:not(.is-fullscreen):not(.is-mobile):not(.mod-macos) .wo
     padding-right: 0;
 }
 
+/* The drag strip stops before the window controls. Chromium lets a later
+   drag region override an earlier no-drag one, so a full-width strip would
+   swallow the clicks on the controls Obsidian draws on Windows and Linux.
+   Obsidian sets --frame-right-space to their width. */
 body.is-hidden-frameless:not(.is-fullscreen):not(.is-mobile) .workspace::before {
     content: "";
     position: absolute;
-    inset: 0 0 auto 0;
+    inset: 0 var(--frame-right-space, 0px) auto 0;
     height: var(--nm-titlebar-height);
     -webkit-app-region: drag;
 }
