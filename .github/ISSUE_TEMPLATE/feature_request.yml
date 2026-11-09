@@ -1,0 +1,11 @@
+name: Feature request
+description: Suggest an idea or a new option for the theme
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like?
+      description: Describe the idea and why it would help. Mockups or screenshots are welcome.
+    validations:
+      required: true

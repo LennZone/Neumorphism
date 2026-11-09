@@ -1,0 +1,46 @@
+name: Bug report
+description: Something in the theme looks or behaves wrong
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What is wrong?
+      description: Describe the problem and where it appears.
+    validations:
+      required: true
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: Drag and drop a screenshot here.
+    validations:
+      required: true
+  - type: input
+    id: obsidian-version
+    attributes:
+      label: Obsidian version
+      placeholder: "1.14.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      multiple: true
+      options: [Windows, macOS, Linux, Android, iOS]
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Mode
+      multiple: true
+      options: [Light, Dark]
+    validations:
+      required: true
+  - type: textarea
+    id: other
+    attributes:
+      label: Other themes, snippets or plugins
+      description: CSS snippets or plugins that change the look, for example Style Settings with changed values.
